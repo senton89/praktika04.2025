@@ -1,0 +1,171 @@
+// src/pages/HomePage.tsx
+import React, { useEffect } from 'react';
+import { Box, Typography, Button, Grid, Container, Paper } from '@mui/material';
+import { Link as RouterLink } from 'react-router-dom';
+import { useAppDispatch, useAppSelector } from '../hooks/reduxHooks';
+import ProductList from '../components/products/ProductList';
+import { fetchFeaturedProducts } from '../store/slices/productsSlice';
+
+const HomePage: React.FC = () => {
+    const dispatch = useAppDispatch();
+    const { featuredProducts, loading, error } = useAppSelector((state) => state.products);
+
+    useEffect(() => {
+        dispatch(fetchFeaturedProducts());
+    }, [dispatch]);
+
+    return (
+        <Box>
+            {/* Hero Section */}
+            <Paper
+                sx={{
+                    position: 'relative',
+                    backgroundColor: 'grey.800',
+                    color: '#fff',
+                    mb: 4,
+                    backgroundSize: 'cover',
+                    backgroundRepeat: 'no-repeat',
+                    backgroundPosition: 'center',
+                    backgroundImage: 'url(https://source.unsplash.com/random?shopping)',
+                    height: '400px',
+                    display: 'flex',
+                    alignItems: 'center',
+                }}
+            >
+                <Container maxWidth="md">
+                    <Box sx={{ p: { xs: 3, md: 6 } }}>
+                        <Typography component="h1" variant="h3" color="inherit" gutterBottom>
+                            Welcome to Our E-Commerce Store
+                        </Typography>
+                        <Typography variant="h5" color="inherit" paragraph>
+                            Discover amazing products at competitive prices. Shop now and enjoy fast delivery!
+                        </Typography>
+                        <Button
+                            variant="contained"
+                            size="large"
+                            component={RouterLink}
+                            to="/products"
+                            sx={{ mt: 2 }}
+                        >
+                            Shop Now
+                        </Button>
+                    </Box>
+                </Container>
+            </Paper>
+
+            {/* Featured Products Section */}
+            <Container>
+                <ProductList
+                    products={featuredProducts}
+                    loading={loading}
+                    error={error}
+                    title="Featured Products"
+                />
+
+                {/* Categories Section */}
+                <Box sx={{ my: 6 }}>
+                    <Typography variant="h5" component="h2" gutterBottom>
+                        Shop by Category
+                    </Typography>
+                    <Grid container spacing={3}>
+                        <Grid size={{ xs: 12, sm: 4, md: 4 }}> {/*TODO: test*/}
+                            <Paper
+                                component={RouterLink}
+                                to="/categories/1"
+                                sx={{
+                                    height: 200,
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    justifyContent: 'center',
+                                    alignItems: 'center',
+                                    backgroundImage: 'url(https://source.unsplash.com/random?electronics)',
+                                    backgroundSize: 'cover',
+                                    color: 'white',
+                                    textDecoration: 'none',
+                                    position: 'relative',
+                                    '&::before': {
+                                        content: '""',
+                                        position: 'absolute',
+                                        top: 0,
+                                        left: 0,
+                                        right: 0,
+                                        bottom: 0,
+                                        backgroundColor: 'rgba(0,0,0,0.5)',
+                                    },
+                                }}
+                            >
+                                <Typography variant="h5" component="h3" sx={{ position: 'relative', zIndex: 1 }}>
+                                    Electronics
+                                </Typography>
+                            </Paper>
+                        </Grid>
+                        <Grid size={{ xs: 12, sm: 4, md: 4 }}> {/*TODO: test*/}
+                            <Paper
+                                component={RouterLink}
+                                to="/categories/2"
+                                sx={{
+                                    height: 200,
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    justifyContent: 'center',
+                                    alignItems: 'center',
+                                    backgroundImage: 'url(https://source.unsplash.com/random?clothing)',
+                                    backgroundSize: 'cover',
+                                    color: 'white',
+                                    textDecoration: 'none',
+                                    position: 'relative',
+                                    '&::before': {
+                                        content: '""',
+                                        position: 'absolute',
+                                        top: 0,
+                                        left: 0,
+                                        right: 0,
+                                        bottom: 0,
+                                        backgroundColor: 'rgba(0,0,0,0.5)',
+                                    },
+                                }}
+                            >
+                                <Typography variant="h5" component="h3" sx={{ position: 'relative', zIndex: 1 }}>
+                                    Clothing
+                                </Typography>
+                            </Paper>
+                        </Grid>
+                        <Grid size={{ xs: 12, sm: 4, md: 4 }}> {/*TODO: test*/}
+                            <Paper
+                                component={RouterLink}
+                                to="/categories/3"
+                                sx={{
+                                    height: 200,
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    justifyContent: 'center',
+                                    alignItems: 'center',
+                                    backgroundImage: 'url(https://source.unsplash.com/random?books)',
+                                    backgroundSize: 'cover',
+                                    color: 'white',
+                                    textDecoration: 'none',
+                                    position: 'relative',
+                                    '&::before': {
+                                        content: '""',
+                                        position: 'absolute',
+                                        top: 0,
+                                        left: 0,
+                                        right: 0,
+                                        bottom: 0,
+                                        backgroundColor: 'rgba(0,0,0,0.5)',
+                                    },
+                                }}
+                            >
+                                <Typography variant="h5" component="h3" sx={{ position: 'relative', zIndex: 1 }}>
+                                    Books
+                                </Typography>
+                            </Paper>
+                        </Grid>
+                    </Grid>
+                </Box>
+            </Container>
+        </Box>
+    );
+};
+
+export default HomePage;

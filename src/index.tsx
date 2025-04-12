@@ -1,19 +1,21 @@
+// src/index.tsx
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import './index.css';
+import { Provider } from 'react-redux';
+import { store } from './store';
 import App from './App';
-import reportWebVitals from './reportWebVitals';
+import './index.css';
 
 const root = ReactDOM.createRoot(
-  document.getElementById('root') as HTMLElement
-);
-root.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
+    document.getElementById('root') as HTMLElement
 );
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
+root.render(
+    <React.StrictMode>
+        <Provider store={store}>
+            <App />
+        </Provider>
+    </React.StrictMode>
+);
+
+//Давай продолжим разработку проекта согласно плану из Output, опираясь на требования. Давай продолжим реализацию 4 этапа(продолжи 12. Создание глобальных стилей)(действия в проекте проделаны согласно документации Реализованы этапы 1-3 "Реализация Этапа 4: Разработка клиентской части (React)","Продолжение реализации Этапа 4: Разработка клиентской части (React)" ,"Продолжение реализации Этапа 4: Разработка клиентской части (React) Продолжим разработку клиентской части нашего e-commerce приложения, завершая компоненты и страницы, необходимые для полноценного функционирования приложения.","Продолжение реализации Этапа 4: Разработка клиентской части (React) 9. Создание страниц приложения (продолжение)")

@@ -1,0 +1,231 @@
+// src/pages/ProfilePage.tsx
+import React, { useState, useEffect } from 'react';
+import {
+    Box,
+    Typography,
+    Paper,
+    Grid,
+    TextField,
+    Button,
+    Alert,
+    CircularProgress,
+    Divider,
+    Tabs,
+    Tab
+} from '@mui/material';
+import { useAppSelector, useAppDispatch } from '../hooks/reduxHooks';
+import { updateProfile } from '../store/slices/authSlice';
+import { UpdateUserDto } from '../types/auth';
+import OrderList from '../components/orders/OrderList';
+import orderService from '../services/orderService';
+import { OrderDto } from '../types/order';
+
+interface TabPanelProps {
+    children?: React.ReactNode;
+    index: number;
+    value: number;
+}
+
+const TabPanel = (props: TabPanelProps) => {
+    const { children, value, index, ...other } = props;
+
+    return (
+        <div
+            role="tabpanel"
+            hidden={value !== index}
+            id={`profile-tabpanel-${index}`}
+            aria-labelledby={`profile-tab-${index}`}
+            {...other}
+        >
+            {value === index && (
+                <Box sx={{ pt: 3 }}>
+                    {children}
+                </Box>
+            )}
+        </div>
+    );
+};
+
+const ProfilePage: React.FC = () => {
+    const dispatch = useAppDispatch();
+    const { user, loading, error } = useAppSelector((state) => state.auth);
+
+    console.log(user);
+
+    const [tabValue, setTabValue] = useState(0);
+    const [formData, setFormData] = useState<UpdateUserDto>({
+        firstName: user?.firstName || '',
+        lastName: user?.lastName || '',
+        address: user?.address || '',
+        phoneNumber: user?.phoneNumber || ''
+    });
+
+    const [orders, setOrders] = useState<OrderDto[]>([]);
+    const [ordersLoading, setOrdersLoading] = useState(false);
+    const [ordersError, setOrdersError] = useState<string | null>(null);
+
+    useEffect(() => {
+        if (user && tabValue === 1) {
+            fetchOrders();
+        }
+    }, [user, tabValue]);
+
+    const fetchOrders = async () => {
+        if (!user) return;
+
+        try {
+            setOrdersLoading(true);
+            const response = await orderService.getUserOrders(user.id);
+            setOrders(response.data.data);
+        } catch (err: any) {
+            setOrdersError(err.response?.data?.message || 'Failed to fetch orders');
+        } finally {
+            setOrdersLoading(false);
+        }
+    };
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
+        setFormData({
+            ...formData,
+            [name]: value
+        });
+    };
+
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (user) {
+            dispatch(updateProfile({ userId: user.id, userData: formData }));
+        }
+    };
+
+    const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+        setTabValue(newValue);
+    };
+
+    if (!user) {
+        return (
+            <Alert severity="error">
+                User information not available
+            </Alert>
+        );
+    }
+
+    return (
+        <Box sx={{ mb: 4 }}>
+            <Typography variant="h4" component="h1" gutterBottom>
+                My Profile
+            </Typography>
+
+            <Paper sx={{ p: 3 }}>
+                <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+                    <Tabs
+                        value={tabValue}
+                        onChange={handleTabChange}
+                        aria-label="profile tabs"
+                    >
+                        <Tab label="Profile Information" id="profile-tab-0" />
+                        <Tab label="My Orders" id="profile-tab-1" />
+                    </Tabs>
+                </Box>
+
+                <TabPanel value={tabValue} index={0}>
+                    {error && (
+                        <Alert severity="error" sx={{ mb: 2 }}>
+                            {error}
+                        </Alert>
+                    )}
+
+                    <Box component="form" onSubmit={handleSubmit}>
+                        <Grid container spacing={3}>
+                            <Grid size={{ xs: 12, sm: 6}}> {/*TODO: test*/}
+                                <TextField
+                                    fullWidth
+                                    id="username"
+                                    label="Username"
+                                    value={user.username}
+                                    disabled
+                                />
+                            </Grid>
+                            <Grid size={{ xs: 12, sm: 6}}> {/*TODO: test*/}
+                                <TextField
+                                    fullWidth
+                                    id="email"
+                                    label="Email"
+                                    value={user.email}
+                                    disabled
+                                />
+                            </Grid>
+                            <Grid size={{ xs: 12 }}> {/*TODO: test*/}
+                                <Divider sx={{ my: 1 }} />
+                                <Typography variant="h6" gutterBottom>
+                                    Personal Information
+                                </Typography>
+                            </Grid>
+                            <Grid size={{ xs: 12, sm: 6}}> {/*TODO: test*/}
+                                <TextField
+                                    fullWidth
+                                    id="firstName"
+                                    name="firstName"
+                                    label="First Name"
+                                    value={formData.firstName}
+                                    onChange={handleChange}
+                                />
+                            </Grid>
+                            <Grid size={{ xs: 12, sm: 6}}> {/*TODO: test*/}
+                                <TextField
+                                    fullWidth
+                                    id="lastName"
+                                    name="lastName"
+                                    label="Last Name"
+                                    value={formData.lastName}
+                                    onChange={handleChange}
+                                />
+                            </Grid>
+                            <Grid size={{ xs: 12 }}> {/*TODO: test*/}
+                                <TextField
+                                    fullWidth
+                                    id="address"
+                                    name="address"
+                                    label="Address"
+                                    value={formData.address}
+                                    onChange={handleChange}
+                                />
+                            </Grid>
+                            <Grid size={{ xs: 12 }}> {/*TODO: test*/}
+                                <TextField
+                                    fullWidth
+                                    id="phoneNumber"
+                                    name="phoneNumber"
+                                    label="Phone Number"
+                                    value={formData.phoneNumber}
+                                    onChange={handleChange}
+                                />
+                            </Grid>
+                            <Grid size={{ xs: 12 }}> {/*TODO: test*/}
+                                <Button
+                                    type="submit"
+                                    variant="contained"
+                                    color="primary"
+                                    disabled={loading}
+                                >
+                                    {loading ? <CircularProgress size={24} /> : 'Update Profile'}
+                                </Button>
+                            </Grid>
+                        </Grid>
+                    </Box>
+                </TabPanel>
+
+                <TabPanel value={tabValue} index={1}>
+                    <OrderList
+                        orders={orders}
+                        loading={ordersLoading}
+                        error={ordersError}
+                    />
+                </TabPanel>
+            </Paper>
+        </Box>
+    );
+};
+
+export default ProfilePage;
